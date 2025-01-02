@@ -8,8 +8,10 @@ import Input from "~/_components/Input";
 import { Text } from "~/_components/Text";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { useRouter } from "next/navigation";
-import { toast } from 'react-toastify';
-
+import { toast } from "react-toastify";
+import { FaUpload } from "react-icons/fa6";
+import { TbPhotoPlus } from "react-icons/tb";
+import Button from "~/_components/Button";
 
 const AddProduct = () => {
   const router = useRouter();
@@ -26,7 +28,7 @@ const AddProduct = () => {
   const cancel = () => {
     toast.success("Product added Canceled successfully");
     router.push("/");
-  }
+  };
 
   return (
     <>
@@ -72,21 +74,31 @@ const AddProduct = () => {
               {currentStep === 5 && <StepFive previousStep={previousStep} />}
             </Box>
 
-            <div className="mt-4 flex w-full max-w-xl justify-between">
-              <button
-                onClick={cancel}
-                className="cursor-pointer rounded-lg border bg-bgPrimary px-4 py-2 font-bold text-textPrimary hover:bg-bgSecondary"
-                // disabled={currentStep === 1}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={nextStep}
-                className="rounded-lg bg-primary2 px-4 py-2 font-bold text-white hover:bg-primary2"
-                disabled={currentStep === 5}
-              >
-                Continue
-              </button>
+            <div className="mt-4 flex w-full justify-between gap-4 p-4">
+              <div className="w-40">
+                <Button
+                  theme="outline"
+                  onClick={cancel}
+                  className="cursor-pointer rounded-lg border bg-primary2 px-4 py-2 font-bold text-primary2 hover:bg-bgSecondary"
+                >
+                  Cancel
+                </Button>
+              </div>
+              <div className="w-[336px] flex gap-4">
+                <Button
+                  theme="outline"
+                  className="cursor-pointer rounded-lg border bg-primary2 px-4 py-2 font-bold text-primary2 hover:bg-bgSecondary"
+                >
+                  Save As a draft
+                </Button>
+                <Button
+                  onClick={nextStep}
+                  className="rounded-lg bg-primary2 px-4 py-2 font-bold text-white hover:bg-primary2"
+                  disabled={currentStep === 5}
+                >
+                  Continue
+                </Button>
+              </div>
             </div>
           </div>
         </Box>
@@ -96,6 +108,15 @@ const AddProduct = () => {
 };
 
 const StepOne = () => {
+  const [fileName, setFileName] = useState<string | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setFileName(file.name);
+    }
+  };
+
   return (
     <div>
       <Text color={"primary2"} size={"2xl"} font={"bold"}>
@@ -118,23 +139,61 @@ const StepOne = () => {
         />
 
         <Input
-          label="Product Detailed Description"
+          id="product-image"
+          name="product-image"
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+        />
+        <div
+          onClick={() => document.getElementById("product-image")?.click()}
+          className="mt-2 flex h-32 w-full cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-borderPrimary text-textSecondary"
+        >
+          <div className="flex flex-col items-center">
+            <TbPhotoPlus size={50} />
+            {fileName ? (
+              <p className="mt-2 text-textPrimary">{fileName}</p>
+            ) : (
+              <p className="mt-2 text-textSecondary">Browse or Desktop</p>
+            )}
+          </div>
+        </div>
+
+        <Input
+          label="Product Description"
           border="gray"
           type="text"
           placeholder="A detailed description of the product helps customers to learn more about the product."
           theme="transparent"
+          className="pb-14"
         />
+        <div className="flex items-center justify-start gap-4">
+          <div className="flex flex-col">
+            <label className="font-semibold" htmlFor="currency">
+              Product Price Currency
+            </label>
+            <select
+              name="currency"
+              id="currency"
+              className="mt-1 block w-48 rounded-md border-2 border-borderPrimary bg-bgPrimary p-4 text-sm text-textPrimary focus:outline-none"
+            >
+              <option value="unselected">Unselected</option>
+              <option value="$">$</option>
+              <option value="PE">PE</option>
+            </select>
+          </div>
 
-        <Input
-          id="product-image"
-          name="product-image"
-          label="Product Images"
-          border="gray"
-          type="file"
-          accept="image/*"
-          className="mt-2 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-          theme="transparent"
-        />
+          <div className="w-80">
+            <Input
+              label="Product Price"
+              type="number"
+              theme="transparent"
+              className="w-full"
+              border="gray"
+            />
+          </div>
+        </div>
       </form>
     </div>
   );
@@ -143,7 +202,7 @@ const StepOne = () => {
 const StepTwo = ({ previousStep }: { previousStep: () => void }) => {
   return (
     <div>
-      <div className="mb-4 flex gap-2 cursor-pointer" onClick={previousStep}>
+      <div className="mb-4 flex cursor-pointer gap-2" onClick={previousStep}>
         <IoArrowBackCircleOutline size={25} className="text-textSecondary" />
         <Text font={"bold"} size={"xl"} color={"gray"}>
           Back
@@ -166,7 +225,7 @@ const StepTwo = ({ previousStep }: { previousStep: () => void }) => {
 const StepThree = ({ previousStep }: { previousStep: () => void }) => {
   return (
     <div>
-       <div className="mb-4 flex gap-2 cursor-pointer" onClick={previousStep}>
+      <div className="mb-4 flex cursor-pointer gap-2" onClick={previousStep}>
         <IoArrowBackCircleOutline size={25} className="text-textSecondary" />
         <Text font={"bold"} size={"xl"} color={"gray"}>
           Back
@@ -192,7 +251,7 @@ const StepThree = ({ previousStep }: { previousStep: () => void }) => {
 const StepFour = ({ previousStep }: { previousStep: () => void }) => {
   return (
     <div>
-       <div className="mb-4 flex gap-2 cursor-pointer" onClick={previousStep}>
+      <div className="mb-4 flex cursor-pointer gap-2" onClick={previousStep}>
         <IoArrowBackCircleOutline size={25} className="text-textSecondary" />
         <Text font={"bold"} size={"xl"} color={"gray"}>
           Back
@@ -219,7 +278,7 @@ const StepFour = ({ previousStep }: { previousStep: () => void }) => {
 const StepFive = ({ previousStep }: { previousStep: () => void }) => {
   return (
     <div>
-       <div className="mb-4 flex gap-2 cursor-pointer" onClick={previousStep}>
+      <div className="mb-4 flex cursor-pointer gap-2" onClick={previousStep}>
         <IoArrowBackCircleOutline size={25} className="text-textSecondary" />
         <Text font={"bold"} size={"xl"} color={"gray"}>
           Back
