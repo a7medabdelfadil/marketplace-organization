@@ -24,7 +24,7 @@ type ButtonProps = {
   children: ReactNode;
   className?: string;
   theme?: "outline" | "solid";
-  color?: "error" | "primary" | "secondary";
+  color?: "error" | "primary" | "primary2" | "secondary";
 } & (ButtonAsButton | ButtonAsAnchor | ButtonAsLink);
 
 /**
@@ -55,15 +55,15 @@ const Button = ({
       ? "bg-error text-white hover:bg-errorHover"
       : color === "secondary"
       ? "bg-bgPowderBlue text-white hover:bg-textSecondary"
-      : "bg-primary text-white hover:bg-primaryHover";
+      : `bg-${color} text-white hover:bg-${color}Hover`;
 
   const themeClassName =
     theme === "outline"
       ? color === "error"
         ? "text-error border border-error bg-transparent"
         : color === "secondary"
-        ? "text-secondary-500 border border-secondary-500 bg-transparent hover:bg-secondary-200"
-        : "text-primary border border-primary bg-transparent hover:bg-primary hover:text-white"
+        ? "text-secondary border border-secondary bg-transparent hover:bg-secondary-200"
+        : `text-${color} border border-${color} bg-transparent hover:bg-${color}Hover hover:text-white`
       : colorClassName;
 
   const computedClassName = `${baseClassName} ${themeClassName} ${

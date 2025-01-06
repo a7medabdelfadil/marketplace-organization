@@ -1,10 +1,13 @@
 import type { ReactNode } from "react";
-import { useBooleanValue } from "~/APIs/store";
 
 const Container = ({ children }: { children: ReactNode }) => {
-    const bool = useBooleanValue((state) => state.boolean)
-  return <div
-  className={`ml-3 mr-3 mt-5 ${bool ? "lg:ml-[270px]" : "lg:ml-[100px]"} transition ease-in duration-300 transform`}>{children}</div>;
+  return (
+    <div
+      className={`ml-0 mx-[10px] md:ml-[130px] lg:ml-[170px] mt-5 transform transition duration-300 ease-in`}
+    >
+      {children}
+    </div>
+  );
 };
 
 export default Container;

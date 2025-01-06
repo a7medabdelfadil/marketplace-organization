@@ -92,10 +92,10 @@ export default function RootLayout({
       </head>
       <body className="bg-bgSecondary">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <div className="hidden sm:block">
+          <div className="hidden md:block">
             <NavBar />
           </div>
-          <div className="block sm:hidden">
+          <div className="block md:hidden">
             <NavBarMobile />
           </div>
           <TRPCReactProvider>{children}</TRPCReactProvider>

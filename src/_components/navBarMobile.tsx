@@ -56,7 +56,6 @@ interface NavBarLinkProps {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   label: string;
-  small: boolean;
   url: string;
 }
 
@@ -64,27 +63,25 @@ const NavBarLink = ({
   href,
   icon: Icon,
   label,
-  small,
   url,
 }: NavBarLinkProps) => {
   const isActive = url === href;
   return (
-    <li className={`${isActive ? "border-primary text-primary" : ""} w-full flex justify-center items-center h-[85px] hover:bg-bgThird cursor-pointer hover:text-primary`}>
+    <li className={`${isActive ? "border-primary text-primary" : ""} text-navLinks w-full flex justify-center items-center h-[85px] hover:bg-bgThird cursor-pointer hover:text-primary`}>
       <Link
-        className={`text-md text-navLinks group mt-4 flex flex-col w-[40px] items-center gap-x-3.5 rounded-full border-primary font-sans font-semibold hover:bg-bgThird hover:text-primary`}
+        className={`text-md group mt-4 flex flex-col w-[40px] items-center gap-x-3.5 rounded-full border-primary font-sans font-semibold`}
         href={href}
       >
         <Icon
-          className={`h-8 w-8  : ""}`}
+          className="h-7 w-7"
         />
-        <p className={`${isActive ? "text-primary" : ""} text-sm mt hover:text-primary`}>{label}</p>
+        <p className={`${isActive ? "text-primary" : ""} text-sm mt-1`}>{label}</p>
       </Link>
     </li>
   );
 };
 
 const NavBarMobile = () => {
-  const toggleNav = useBooleanValue((state: any) => state.toggle);
   const [profile, setProfile] = useState(false);
   const toggleProfile = () => {
     setProfile(!profile);
@@ -96,45 +93,10 @@ const NavBarMobile = () => {
   }, []);
   const { theme, setTheme } = useTheme();
   const url = usePathname();
-  const [small, setSmall] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpen5, setIsOpen5] = useState(false);
 
   const handleThemeChange = (value: boolean) => {
     setTheme(value ? "dark" : "light");
   };
-  const toggleNavbar5 = () => {
-    setIsOpen5(!isOpen5);
-  };
-
-  const DeleteCookie = () => {
-    Cookie.remove("token");
-    useUserDataStore.getState().clearUserData();
-  };
-
-  const toggleNavbarSmall = () => {
-    setSmall(!small);
-    toggleNav();
-    if (!small == true) {
-      setIsOpen5(true);
-    }
-    if (small == true) {
-      setIsOpen5(false);
-    }
-  };
-  const userId = userData.id;
-
-  const OpenSideBar = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const { width } = useWindowDimensions();
-
-  useEffect(() => {
-    if (width !== undefined && width >= 1023) {
-      setIsOpen(true);
-    }
-  }, [width]);
 
   const navLinks = [
     { href: "/organization", icon: FaBuildingColumns, label: "Organization" },
@@ -163,7 +125,7 @@ const NavBarMobile = () => {
               aria-label="Global"
             >
               <div className="flex">
-                <div className="sm:hidden">
+                <div className="md:hidden">
                   <button
                     type="button"
                     className="inline-flex h-[2.375rem] w-[2.375rem] items-center justify-center gap-x-2 rounded-full border border-transparent text-sm font-semibold hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50"
@@ -178,7 +140,7 @@ const NavBarMobile = () => {
                   <IoCalendarNumberOutline size={25} />
                 </Link>
               </div>
-              <div className="me-5 lg:me-0 lg:hidden">
+              <div className="me-5  lg:me-0 lg:hidden">
                 <Link
                   className="inline-block flex-none rounded-xl text-xl font-semibold focus:opacity-80 focus:outline-none"
                   href="/"
@@ -221,85 +183,11 @@ const NavBarMobile = () => {
               </div>
             </nav>
           </header>
-          <div className="sticky inset-x-0 top-0 z-20 hidden border-y border-borderPrimary bg-bgPrimary px-4 sm:px-6 md:px-8 lg:hidden">
-            <div className="flex items-center justify-between py-2">
-              <ol className="ms-3 flex items-center whitespace-nowrap">
-                <li className="flex items-center text-sm text-textPrimary">
-                  {/* Breadcrumb or other content */}
-                </li>
-              </ol>
-
-              <button
-                onClick={OpenSideBar}
-                type="button"
-                className="flex items-center justify-center gap-x-1.5 rounded-lg border border-borderPrimary px-3 py-2 text-xs text-gray-500 hover:text-gray-600"
-                data-hs-overlay="#application-sidebar"
-                aria-controls="application-sidebar"
-                aria-label="Sidebar"
-              >
-                <svg
-                  className="size-4 flex-shrink-0"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M17 8L21 12L17 16M3 12H13M3 6H13M3 18H13" />
-                </svg>
-                <span className="sr-only">Sidebar</span>
-              </button>
-            </div>
-          </div>
           <div
             dir={"ltr"}
             id="application-sidebar"
-            className={`hs-overlay hs-overlay-open:translate-x-0 fixed inset-x-0 bottom-0 z-[60] h-[90px] transform overflow-y-auto border-t border-borderPrimary bg-bgPrimary drop-shadow-2xl transition-all duration-300 ease-in [--auto-close:lg] lg:bottom-0 lg:end-auto lg:block lg:translate-x-0 lg:drop-shadow-none`}
-          >
-            {/* <div className="px-8 pt-4">
-                <Link href="/">
-                  {small ? (
-                    <img
-                      className="mt-5 scale-[2]"
-                      src="/images/opreamIcon.png"
-                      alt="Logo"
-                    />
-                  ) : (
-                    <img
-                      className="-translate-7 w-[150px] translate-y-3"
-                      src="/images/opreamIcon.png"
-                      alt="Logo"
-                    />
-                  )}
-                </Link>
-              </div> */}
-            {/* <div className="mx-5 flex -translate-y-6 justify-end">
-                {!small && (
-                  <button onClick={toggleNavbarSmall}>
-                    <svg
-                      className="h-8 w-8 text-textPrimary"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2"
-                      stroke="currentColor"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path stroke="none" d="M0 0h24v24H0z" />
-                      <line x1="4" y1="6" x2="20" y2="6" />
-                      <line x1="4" y1="12" x2="20" y2="12" />
-                      <line x1="4" y1="18" x2="20" y2="18" />
-                    </svg>
-                  </button>
-                )}
-              </div> */}
-
+            className={`hs-overlay hs-overlay-open:translate-x-0 fixed inset-x-0 bottom-0 z-[60] h-[90px] transform overflow-y-auto border-t border-borderPrimary bg-bgPrimary drop-shadow-md shadow-[0_-4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 ease-in [--auto-close:lg] lg:bottom-0 lg:end-auto lg:block lg:translate-x-0 lg:drop-shadow-none`}
+            >
             <nav
               className={`hs-accordion-group flex w-full`}
               // data-hs-accordion-always-open
@@ -311,7 +199,6 @@ const NavBarMobile = () => {
                     href={link.href}
                     icon={link.icon}
                     label={link.label}
-                    small={small}
                     url={url}
                   />
                 ))}

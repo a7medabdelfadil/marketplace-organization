@@ -17,6 +17,8 @@ import { FaVideo } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa";
 import { FaBuildingColumns } from "react-icons/fa6";
 import { IoShareSocialSharp } from "react-icons/io5";
+import { Text } from "./Text";
+import { IoIosArrowDropdownCircle } from "react-icons/io";
 
 const useWindowDimensions = () => {
   const isClient = typeof window === "object";
@@ -48,39 +50,38 @@ interface NavBarLinkProps {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   label: string;
-  small: boolean;
   url: string;
 }
 
-const NavBarLink = ({
-  href,
-  icon: Icon,
-  label,
-  small,
-  url,
-}: NavBarLinkProps) => {
+const NavBarLink = ({ href, icon: Icon, label, url }: NavBarLinkProps) => {
   const isActive = url === href;
   return (
-    <li>
+    <li className="mt-4">
       <Link
-        className={`mt-4 flex items-center gap-x-3.5 px-2.5 py-2 font-sans font-semibold rounded-full ${isActive && small ? "border-primary2 text-primary2 w-[40px]" : ""} ${isActive && !small ? "bg-bgThird border-primary2 text-primary2" : ""} ${small && !isActive ? "w-[40px] bg-bgPrimary" : "bg-bgPrimary"} text-md text-navLinks group hover:bg-bgThird hover:text-primary2`}
         href={href}
+        className={`text-md group flex flex-col items-center gap-2 rounded-full font-sans font-semibold transition-all duration-200`}
       >
-        <Icon
-          className={`h-10 w-10 ${small ? "" : "pl-4"} ${isActive ? "border-primary2 text-primary2" : ""} `}
-        />
-        {!small && (
-          <p className={`translate-y-0.5 ${isActive ? "text-primary2" : ""}`}>
-            {label}
-          </p>
-        )}
+        <div
+          className={`rounded-full px-6 py-3 transition-transform duration-200 group-hover:scale-110 lg:px-8 ${isActive ? "bg-bgThird" : "bg-bgPrimary group-hover:bg-bgThird"}`}
+        >
+          <Icon
+            className={`text-md h-5 w-5 md:w-6 lg:h-6 ${isActive ? "text-primary2" : "text-navLinks group-hover:text-primary2"}`}
+          />
+        </div>
+
+        <p
+          className={`mt-1 text-sm transition-all duration-200 ${isActive ? "text-primary2" : "text-textPrimary group-hover:text-primary2"}`}
+        >
+          {label}
+        </p>
       </Link>
     </li>
   );
 };
 
 const NavBar = () => {
-  const toggleNav = useBooleanValue((state: any) => state.toggle);
+  const [search, setSearch] = useState("");
+
   const [profile, setProfile] = useState(false);
   const toggleProfile = () => {
     setProfile(!profile);
@@ -92,45 +93,15 @@ const NavBar = () => {
   }, []);
   const { theme, setTheme } = useTheme();
   const url = usePathname();
-  const [small, setSmall] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpen5, setIsOpen5] = useState(false);
 
   const handleThemeChange = (value: boolean) => {
     setTheme(value ? "dark" : "light");
-  };
-  const toggleNavbar5 = () => {
-    setIsOpen5(!isOpen5);
   };
 
   const DeleteCookie = () => {
     Cookie.remove("token");
     useUserDataStore.getState().clearUserData();
   };
-
-  const toggleNavbarSmall = () => {
-    setSmall(!small);
-    toggleNav();
-    if (!small == true) {
-      setIsOpen5(true);
-    }
-    if (small == true) {
-      setIsOpen5(false);
-    }
-  };
-  const userId = userData.id;
-
-  const OpenSideBar = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const { width } = useWindowDimensions();
-
-  useEffect(() => {
-    if (width !== undefined && width >= 1023) {
-      setIsOpen(true);
-    }
-  }, [width]);
 
   const navLinks = [
     { href: "/", icon: IoShareSocialSharp, label: "Social" },
@@ -156,44 +127,45 @@ const NavBar = () => {
             className={`sticky inset-x-0 top-0 z-[48] flex w-full flex-wrap bg-bgPrimary py-2.5 text-sm sm:flex-nowrap sm:justify-start sm:py-4 lg:ps-64`}
           >
             <nav
-              className="mx-auto flex w-full  basis-full items-center px-4 sm:px-6"
+              className="mx-auto flex w-full basis-full items-center px-4 sm:px-6"
               aria-label="Global"
             >
-              <div className="me-5  lg:me-0 lg:hidden">
-                <Link
-                  className="inline-block flex-none rounded-xl text-xl font-semibold focus:opacity-80 focus:outline-none"
-                  href="/"
-                  aria-label="Preline"
-                >
-                  <img src="/images/logo.png" alt="#" />
-                </Link>
-              </div>
               <div className="ms-auto flex w-full items-center justify-end sm:order-3 sm:justify-between sm:gap-x-3">
-                <div className="sm:hidden">
-                  <button
-                    type="button"
-                    className="inline-flex h-[2.375rem] w-[2.375rem] items-center justify-center gap-x-2 rounded-full border border-transparent text-sm font-semibold text-gray-800 hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50"
-                  >
-                    <svg
-                      className="size-4 flex-shrink-0"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="11" cy="11" r="8" />
-                      <path d="m21 21-4.3-4.3" />
-                    </svg>
-                  </button>
-                </div>
-
                 <div className="hidden sm:block"></div>
-
+                <div className="hidden justify-between text-center max-[502px]:grid max-[502px]:justify-center lg:flex">
+                  <div className="mb-3 hidden md:block">
+                    <label htmlFor="icon" className="sr-only">
+                      Search
+                    </label>
+                    <div className="relative md:min-w-80">
+                      <div className="pointer-events-none absolute inset-y-0 start-0 z-20 flex items-center ps-4">
+                        <svg
+                          className="size-4 flex-shrink-0 text-gray-400"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <circle cx="11" cy="11" r="8" />
+                          <path d="m21 21-4.3-4.3" />
+                        </svg>
+                      </div>
+                      <input
+                        onChange={(e) => setSearch(e.target.value)}
+                        type="text"
+                        id="icon"
+                        name="icon"
+                        className="block w-full rounded-lg border-2 border-borderPrimary px-4 py-2 ps-11 text-sm outline-none focus:border-blue-500 focus:ring-blue-500 disabled:pointer-events-none disabled:opacity-50"
+                        placeholder="Search"
+                      />
+                    </div>
+                  </div>
+                </div>
                 <div className="flex flex-row items-center justify-end gap-2">
                   <Switch
                     checked={theme === "dark"}
@@ -213,22 +185,26 @@ const NavBar = () => {
                     <IoMdNotifications size={25} />
                   </Link>
 
-                  <div className="hs-dropdown relative inline-flex [--placement:bottom-right]">
+                  <div className="hs-dropdown relative flex items-center justify-center rounded-full border border-borderPrimary p-2 [--placement:bottom-right] hover:bg-bgSecondary">
                     <DropdownMenu.Root>
                       <DropdownMenu.Trigger asChild>
                         <button
                           onClick={toggleProfile}
                           id="hs-dropdown-with-header"
                           type="button"
-                          className="border-bgSeconday inline-flex h-[2.375rem] w-[2.375rem] items-center justify-center gap-x-2 rounded-full border text-sm font-semibold text-gray-800 outline-none hover:bg-thead disabled:pointer-events-none disabled:opacity-50"
+                          className="flex items-center justify-center gap-x-2 rounded-full text-sm font-semibold outline-none disabled:pointer-events-none disabled:opacity-50"
                         >
-                          <div>
+                          <div className="flex items-center justify-center gap-2">
                             <img
                               className="inline-block h-[38px] w-[38px] rounded-full ring-2 ring-bgSecondary"
-                              // src={`${userData.picture ?? "/images/productOwnder.png"}`}
                               src="/images/productOwnder.png"
                               alt="User Avatar"
                             />
+                            <div className="flex flex-col">
+                              <Text>Alex Rawles</Text>
+                              <Text color={"gray"}>(Leaner)</Text>
+                            </div>
+                            <IoIosArrowDropdownCircle size={25} />
                           </div>
                         </button>
                       </DropdownMenu.Trigger>
@@ -251,7 +227,7 @@ const NavBar = () => {
                           <div className="mt-2 py-2">
                             <DropdownMenu.Item asChild>
                               <Link
-                                className="flex items-center gap-x-3.5 rounded-lg border-none px-3 py-2 text-sm text-textPrimary outline-none hover:bg-bgSecondary"
+                                className="flex items-center gap-x-3.5 rounded-lg border-none px-3 py-2 text-sm text-textPrimary outline-none"
                                 href="/profile"
                               >
                                 <svg
@@ -277,7 +253,7 @@ const NavBar = () => {
                             <DropdownMenu.Item asChild>
                               <a
                                 onClick={() => DeleteCookie()}
-                                className="flex items-center gap-x-3.5 rounded-lg border-none px-3 py-2 text-sm text-textPrimary outline-none hover:bg-error hover:text-white"
+                                className="flex items-center gap-x-3.5 rounded-lg border-none px-3 py-2 text-sm text-textPrimary outline-none"
                                 href="/login"
                               >
                                 Sign out
@@ -292,133 +268,42 @@ const NavBar = () => {
               </div>
             </nav>
           </header>
-          <div className="sticky inset-x-0 top-0 z-20 border-y border-borderPrimary bg-bgPrimary px-4 sm:px-6 md:px-8 lg:hidden">
-            <div className="flex items-center justify-between py-2">
-              <ol className="ms-3 flex items-center whitespace-nowrap">
-                <li className="flex items-center text-sm text-textPrimary">
-                  {/* Breadcrumb or other content */}
-                </li>
-              </ol>
-
-              <button
-                onClick={OpenSideBar}
-                type="button"
-                className="flex items-center justify-center gap-x-1.5 rounded-lg border border-borderPrimary px-3 py-2 text-xs text-gray-500 hover:text-gray-600"
-                data-hs-overlay="#application-sidebar"
-                aria-controls="application-sidebar"
-                aria-label="Sidebar"
-              >
-                <svg
-                  className="size-4 flex-shrink-0"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M17 8L21 12L17 16M3 12H13M3 6H13M3 18H13" />
-                </svg>
-                <span className="sr-only">Sidebar</span>
-              </button>
-            </div>
-          </div>
-          {isOpen && (
-            <div
-              dir={"ltr"}
-              id="application-sidebar"
-              className={`hs-overlay hs-overlay-open:translate-x-0 transform transition-all duration-300 [--auto-close:lg] ${
-                small ? "w-[90px]" : "w-[260px]"
-              } drop-shadow-2xl lg:drop-shadow-none ${
-                !isOpen ? "w-0" : ""
-              } fixed inset-y-0 start-0 z-[60] overflow-y-auto bg-bgPrimary duration-300 ease-in lg:bottom-0 lg:end-auto lg:block lg:translate-x-0`}
-            >
-              <div className="px-8 pt-4">
-                <Link href="/">
-                  {small ? (
-                    <img
+          <div
+            dir={"ltr"}
+            id="application-sidebar"
+            className={`hs-overlay hs-overlay-open:translate-x-0 fixed inset-y-0 start-0 z-[60] w-[120px] transform overflow-y-auto bg-bgPrimary drop-shadow-2xl transition-all duration-300 ease-in [--auto-close:lg] lg:bottom-0 lg:end-auto lg:block lg:w-[150px] lg:translate-x-0 lg:drop-shadow-none`}
+          >
+            <div className="px-8 pt-4">
+              <Link href="/">
+                {/* <img
                       className="mt-5 scale-[2]"
                       src="/images/opreamIcon.png"
                       alt="Logo"
-                    />
-                  ) : (
-                    <img
-                      className="-translate-7 w-[150px] translate-y-3"
-                      src="/images/opreamIcon.png"
-                      alt="Logo"
-                    />
-                  )}
-                </Link>
-              </div>
-              <div className="mx-5 flex -translate-y-6 justify-end">
-                {!small && (
-                  <button onClick={toggleNavbarSmall}>
-                    <svg
-                      className="h-8 w-8 text-textPrimary"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2"
-                      stroke="currentColor"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path stroke="none" d="M0 0h24v24H0z" />
-                      <line x1="4" y1="6" x2="20" y2="6" />
-                      <line x1="4" y1="12" x2="20" y2="12" />
-                      <line x1="4" y1="18" x2="20" y2="18" />
-                    </svg>
-                  </button>
-                )}
-              </div>
-
-              <nav
-                className={`hs-accordion-group flex w-full flex-col flex-wrap p-6 ${
-                  !isOpen ? "hidden" : ""
-                } `}
-                data-hs-accordion-always-open
-              >
-                <ul className="space-y-1.5">
-                  <div
-                    className={`flex ${small ? "w-[40px]" : ""} justify-center`}
-                  >
-                    {small && (
-                      <button onClick={toggleNavbarSmall}>
-                        <svg
-                          className="h-6 w-6 text-textPrimary"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          strokeWidth="2"
-                          stroke="currentColor"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" />
-                          <polyline points="9 6 15 12 9 18" />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                  {navLinks.map((link) => (
-                    <NavBarLink
-                      key={link.href}
-                      href={link.href}
-                      icon={link.icon}
-                      label={link.label}
-                      small={small}
-                      url={url}
-                    />
-                  ))}
-                </ul>
-              </nav>
+                    /> */}
+                <img
+                  className="-translate-7 w-[150px] translate-y-3"
+                  src="/images/opreamIcon.png"
+                  alt="Logo"
+                />
+              </Link>
             </div>
-          )}
+            <nav
+              className="hs-accordion-group flex w-full flex-col p-6"
+              data-hs-accordion-always-open
+            >
+              <ul className="space-y-1.5">
+                {navLinks.map((link) => (
+                  <NavBarLink
+                    key={link.href}
+                    href={link.href}
+                    icon={link.icon}
+                    label={link.label}
+                    url={url}
+                  />
+                ))}
+              </ul>
+            </nav>
+          </div>
         </div>
       </header>
     </>
