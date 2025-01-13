@@ -13,6 +13,7 @@ import { GrFavorite } from "react-icons/gr";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import Products from "~/_components/Porducts";
 import { useRouter } from "next/navigation";
+import { BsFillFilterSquareFill } from "react-icons/bs";
 
 const Market = () => {
   const router = useRouter();
@@ -229,7 +230,7 @@ const Market = () => {
 
   const handleClickButton = () => {
     router.push("/add-product");
-  }
+  };
   return (
     <>
       <Container>
@@ -319,7 +320,12 @@ const Market = () => {
                     size={40}
                   />
                   {selected === "product" ? (
-                    <Button onClick={handleClickButton} className="hidden md:block">Add Product</Button>
+                    <Button
+                      onClick={handleClickButton}
+                      className="hidden md:block"
+                    >
+                      Add Product
+                    </Button>
                   ) : (
                     <Button className="hidden md:block">Add Service</Button>
                   )}
@@ -372,20 +378,19 @@ const Market = () => {
                       <div className="xl:1/2 flex w-full flex-col items-center p-4 md:w-2/3">
                         <Text
                           font={"bold"}
-                          className="text-center text-[30px] md:text-[35px] xl:text-[48px]"
+                          className="text-center text-[25px] md:text-[35px] xl:text-[48px]"
                         >
                           Shop for Success:
                         </Text>
                         <Text
                           font={"bold"}
-                          className="text-center text-[30px] md:text-[35px] xl:text-[48px]"
+                          className="text-center text-[25px] md:text-[35px] xl:text-[48px]"
                         >
                           Study Tools You Need
                         </Text>
                         <Text
                           font={"medium"}
-                          size={"xl"}
-                          className="mt-4 text-center"
+                          className="md:text-md mt-4 text-center text-sm lg:text-xl"
                         >
                           Explore our wide selection of products designed to
                           enhance your study experience. From essential supplies
@@ -393,6 +398,25 @@ const Market = () => {
                           stay organized, focused, and motivated. Start
                           equipping yourself for academic excellence today.
                         </Text>
+                      </div>
+                      <div className="mb-3 block min-w-[350px] md:hidden">
+                        <label htmlFor="icon" className="sr-only">
+                          Search
+                        </label>
+                        <div className="relative flex w-full">
+                          <input
+                            onChange={(e) => setSearch(e.target.value)}
+                            type="text"
+                            id="icon"
+                            name="icon"
+                            className="block w-full rounded-lg border border-borderPrimary px-4 py-2 text-sm shadow outline-none focus:border-blue-500 focus:ring-blue-500 disabled:pointer-events-none disabled:opacity-50"
+                            placeholder="Search for any product"
+                          />
+                          <BsFillFilterSquareFill
+                            className="absolute right-2 top-[6px] cursor-pointer text-primary"
+                            size={25}
+                          />
+                        </div>
                       </div>
                       <div className="w-full">
                         <img
@@ -405,14 +429,13 @@ const Market = () => {
                     <div className="xl:1/2 flex w-full flex-col items-center p-4 md:w-2/3">
                       <Text
                         font={"bold"}
-                        className="mt-6 text-center text-[30px] md:text-[42px] xl:text-[48px]"
+                        className="mt-6 text-center text-[25px] md:text-[42px] xl:text-[48px]"
                       >
                         View all products
                       </Text>
                       <Text
                         font={"medium"}
-                        size={"xl"}
-                        className="mt-4 text-center"
+                        className="md:text-md mt-4 text-center text-sm lg:text-xl"
                       >
                         Find any product whether it&apos;s stuff you need for
                         studying
@@ -429,7 +452,7 @@ const Market = () => {
                     <div className="xl:1/2 flex w-full flex-col items-center p-4 md:w-2/3">
                       <Text
                         font={"bold"}
-                        className="text-[30px] md:text-[42px] xl:text-[48px]"
+                        className="text-[25px] md:text-[35px] xl:text-[48px]"
                       >
                         Top product
                       </Text>
@@ -440,26 +463,45 @@ const Market = () => {
               ) : (
                 <div>
                   <div className="mt-4 flex flex-col items-center justify-center gap-4 md:mt-24">
-                    <div className="flex flex-col items-center justify-center bg-bgThird md:bg-bgPrimary">
+                    <div className="flex flex-col items-center justify-center bg-bgThird pb-4 md:bg-bgPrimary">
                       <div className="xl:1/2 flex w-full flex-col items-center p-4 md:w-2/3">
                         <Text
                           font={"bold"}
-                          className="text-center text-[30px] md:text-[35px] xl:text-[48px]"
+                          className="text-center text-[25px] md:text-[35px] xl:text-[48px]"
                         >
                           Boost Your Learning Journey:
                         </Text>
                         <Text
                           font={"bold"}
-                          className="text-center text-[30px] md:text-[35px] xl:text-[48px]"
+                          className="text-center text-[25px] md:text-[35px] xl:text-[48px]"
                         >
                           Interactive Lessons, Study Kits, and Expert Advice
                         </Text>
+                      </div>
+                      <div className="mb-3 block min-w-[350px] md:hidden">
+                        <label htmlFor="icon" className="sr-only">
+                          Search
+                        </label>
+                        <div className="relative flex w-full">
+                          <input
+                            onChange={(e) => setSearch(e.target.value)}
+                            type="text"
+                            id="icon"
+                            name="icon"
+                            className="block w-full rounded-lg border border-borderPrimary px-4 py-2 text-sm shadow outline-none focus:border-blue-500 focus:ring-blue-500 disabled:pointer-events-none disabled:opacity-50"
+                            placeholder="Search for any product"
+                          />
+                          <BsFillFilterSquareFill
+                            className="absolute right-2 top-[6px] cursor-pointer text-primary"
+                            size={25}
+                          />
+                        </div>
                       </div>
                     </div>
                     <div className="xl:1/2 mt-8 flex w-full flex-col items-center p-4 md:w-2/3">
                       <Text
                         font={"bold"}
-                        className="text-center text-[30px] md:text-[42px] xl:text-[48px]"
+                        className="text-center text-[25px] md:text-[35px] xl:text-[48px]"
                       >
                         View all Services
                       </Text>
@@ -482,7 +524,7 @@ const Market = () => {
                     <div className="xl:1/2 flex w-full flex-col items-center p-4 md:w-2/3">
                       <Text
                         font={"bold"}
-                        className="text-[30px] md:text-[42px] xl:text-[48px]"
+                        className="text-[25px] md:text-[35px] xl:text-[48px]"
                       >
                         Top product
                       </Text>
