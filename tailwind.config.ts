@@ -34,6 +34,7 @@ export default {
         bgInput: "rgba(var(--bg-input))",
         bgPowderBlue: "rgba(var(--bg-powder-blue))",
         bgGray: "rgba(var(--bg-gray))",
+        offWhite: "rgba(var(--off-white))",
         textPrimary: "rgba(var(--text-primary))",
         textSecondary: "rgba(var(--text-secondary))",
         textMuted: "rgba(var(--text-muted))",

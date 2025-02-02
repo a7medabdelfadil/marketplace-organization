@@ -37,7 +37,7 @@ const Input: React.FC<InputProps> = ({
     theme === "transparent"
       ? "bg-transparent"
       : theme === "gray"
-        ? "bg-bgInput rounded-xl"
+        ? "bg-lightGray rounded-xl"
         : "bg-bgSecondary";
 
   const borderClass =
