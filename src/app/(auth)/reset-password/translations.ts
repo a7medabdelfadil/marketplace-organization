@@ -1,31 +1,39 @@
 const translations = {
   en: {
-    title: "Code Verification",
-    description: "Write the Code sent to",
-    verifyButton: "Verify",
-    resendText: "Didn't you receive the Code?",
-    resendLink: "Resend Code",
+    title: "Set a password",
+    description:
+      "Your previous password has been reset. Please set a new password for your account.",
+    createPassword: "Create Password",
+    newPassword: "New Password",
+    reenterPassword: "Re-enter Password",
+    confirm: "Confirm",
   },
   ar: {
-    title: "التحقق من الرمز",
-    description: "أدخل الرمز المرسل إلى",
-    verifyButton: "تحقق",
-    resendText: "لم تستلم الرمز؟",
-    resendLink: "إعادة إرسال الرمز",
+    title: "تعيين كلمة المرور",
+    description:
+      "تمت إعادة تعيين كلمة المرور السابقة. يرجى تعيين كلمة مرور جديدة لحسابك.",
+    createPassword: "إنشاء كلمة المرور",
+    newPassword: "كلمة مرور جديدة",
+    reenterPassword: "إعادة إدخال كلمة المرور",
+    confirm: "تأكيد",
   },
   fr: {
-    title: "Vérification du code",
-    description: "Entrez le code envoyé à",
-    verifyButton: "Vérifier",
-    resendText: "Vous n'avez pas reçu le code?",
-    resendLink: "Renvoyer le code",
+    title: "Définir un mot de passe",
+    description:
+      "Votre mot de passe précédent a été réinitialisé. Veuillez définir un nouveau mot de passe pour votre compte.",
+    createPassword: "Créer un mot de passe",
+    newPassword: "Nouveau mot de passe",
+    reenterPassword: "Ressaisir le mot de passe",
+    confirm: "Confirmer",
   },
   ru: {
-    title: "Проверка кода",
-    description: "Введите код, отправленный на",
-    verifyButton: "Проверить",
-    resendText: "Вы не получили код?",
-    resendLink: "Отправить код повторно",
+    title: "Установить пароль",
+    description:
+      "Ваш предыдущий пароль был сброшен. Пожалуйста, установите новый пароль для своей учетной записи.",
+    createPassword: "Создать пароль",
+    newPassword: "Новый пароль",
+    reenterPassword: "Повторите пароль",
+    confirm: "Подтвердить",
   },
 };
 

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
@@ -7,33 +9,115 @@ import Input from "~/_components/Input";
 import { Text } from "~/_components/Text";
 import { TbPhotoPlus } from "react-icons/tb";
 import { useInitializeLanguage, useLanguageStore } from "~/APIs/store";
-import translations from "./translations";
 import Spinner from "~/_components/Spinner";
 import LanguageSwitcher from "~/_components/LanguageSwitcher";
+import translations from "./translations";
+import { useSignup } from "~/APIs/hooks/useAuth";
+import { type SignupPayload } from "~/APIs/features/auth";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import countryCodes from "constants/CountryCodes";
 
 function Signup() {
+  const router = useRouter();
   const [isChecked, setIsChecked] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
-  const [fileName2, setFileName2] = useState<string | null>(null);
-  const language = useLanguageStore((state) => state.language); // Get the current language
-  const t = translations[language] || translations.en; // Fallback to English if language is not found
+  const language = useLanguageStore((state) => state.language);
+  const t = translations[language] || translations.en;
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const [form, setForm] = useState<SignupPayload & { countryCode: string }>({
+    userName: "",
+    email: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
+    password: "",
+    gender: "Male", // default
+    nationality: "",
+    role: "Organization",
+    rolePerson: null,
+    roleOrganization: "Company",
+    identityImage: null,
+    countryCode: "+1", // default
+  });
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!form.firstName || form.firstName.length < 3) {
+      newErrors.firstName = "First name is required (min 3 letters)";
+    }
+    if (!form.lastName || form.lastName.length < 3) {
+      newErrors.lastName = "Last name is required (min 3 letters)";
+    }
+    if (!form.userName || form.userName.length < 3) {
+      newErrors.userName = "Username is required (min 3, no spaces)";
+    }
+    if (!form.email) {
+      newErrors.email = "Email is required";
+    }
+    if (
+      !form.password ||
+      !/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(form.password)
+    ) {
+      newErrors.password =
+        "Password must be at least 8 characters, include at least one letter and one number";
+    }
+    if (!form.phone) {
+      newErrors.phone = "Phone is required";
+    }
+    if (!form.nationality) {
+      newErrors.nationality = "Nationality is required";
+    }
+    if (!form.identityImage) {
+      newErrors.identityImage = "Identity image is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const { mutate, isPending } = useSignup({
+    onSuccess: () => {
+      router.push(`/verify-account?email=${encodeURIComponent(form.email)}&redirect=sign-in`);
+      toast.success(`Code Verification is sent to ${form.email}`);
+    },
+    onError: (err: any) => {
+      const message = err?.response?.data?.message || "Signup Failed";
+      toast.error(`❌ ${message}`);
+    },
+  });
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       setFileName(file.name);
+      setForm({ ...form, identityImage: file });
     }
   };
 
-  const handleFileChange2 = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file2 = event.target.files?.[0];
-    if (file2) {
-      setFileName2(file2.name);
-    }
-  };
+  const handleCheckboxChange = () => setIsChecked(!isChecked);
 
-  const handleCheckboxChange = () => {
-    setIsChecked(!isChecked);
+  const handleSubmit = () => {
+    if (!validateForm()) return;
+    if (!isChecked) {
+      toast.error("You must agree to the terms");
+      return;
+    }
+    const { countryCode, ...finalPayload } = {
+      ...form,
+      phone: `${form.countryCode}${form.phone}`,
+    };
+    mutate(finalPayload);
   };
 
   useInitializeLanguage(); // Ensure language state is initialized
@@ -54,9 +138,7 @@ function Signup() {
       >
         <LanguageSwitcher />
       </div>
-      <div 
-      dir={`${language === "ar" ? "rtl" : "ltr"}`}
-      className="flex h-screen">
+      <div dir={language === "ar" ? "rtl" : "ltr"} className="flex h-screen">
         {/* Left Section */}
         <div className="flex max-h-screen w-full justify-center overflow-auto bg-bgPrimary py-16 scrollbar-hide md:w-1/2 xl:w-3/5">
           <div className="w-4/5 lg:w-2/3 xl:w-1/2">
@@ -75,86 +157,213 @@ function Signup() {
                   {t.fullName}
                 </label>
                 <div className="mt-1 flex gap-4">
-                  <Input theme="gray" border="none" placeholder={t.firstName} />
-                  <Input theme="gray" border="none" placeholder={t.lastName} />
+                  <div className="flex-1">
+                    <Input
+                      name="firstName"
+                      value={form.firstName}
+                      onChange={handleInputChange}
+                      className="bg-bgInput"
+                      border="none"
+                      placeholder={t.firstName}
+                    />
+                    {errors.firstName && (
+                      <Text color="error" className="mt-1 text-sm">
+                        {errors.firstName}
+                      </Text>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <Input
+                      name="lastName"
+                      value={form.lastName}
+                      onChange={handleInputChange}
+                      className="bg-bgInput"
+                      border="none"
+                      placeholder={t.lastName}
+                    />
+                    {errors.lastName && (
+                      <Text color="error" className="mt-1 text-sm">
+                        {errors.lastName}
+                      </Text>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex flex-col">
-                <label className="font-semibold">{t.role}</label>
+                <Input
+                  name="userName"
+                  value={form.userName}
+                  onChange={handleInputChange}
+                  label={t.username}
+                  className="bg-bgInput"
+                  border="none"
+                  placeholder={t.username}
+                />
+                {errors.userName && (
+                  <Text color="error" className="mt-1 text-sm">
+                    {errors.userName}
+                  </Text>
+                )}
+                {/* <label className="mt-6 font-semibold" htmlFor="role">
+                  {t.role}
+                </label>
                 <select
+                  value={form.role}
                   name="role"
                   id="role"
+                  onChange={handleInputChange}
                   className="mt-1 block w-full rounded-lg border-2 border-bgInput bg-bgInput p-4 text-sm text-textPrimary focus:outline-none"
                 >
-                  <option value="unselected">{t.selectRole}</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
+                  <option value="Personal">Personal</option>
+                  <option value="Organization">Organization</option>
+                  <option value="admin">Admin</option>
                 </select>
+                {errors.role && (
+                  <Text color="error" className="mt-1 text-sm">
+                    {errors.role}
+                  </Text>
+                )} */}
               </div>
               <div className="flex flex-col">
-                <label className="font-semibold">{t.roleOrganization}</label>
+                <label className="font-semibold" htmlFor="rolePerson">
+                  {t.rolePerson}
+                </label>
                 <select
-                  name="roleOrganization"
-                  id="roleOrganization"
+                  value={form.roleOrganization}
+                  name="rolePerson"
+                  id="rolePerson"
+                  onChange={handleInputChange}
                   className="mt-1 block w-full rounded-lg border-2 border-bgInput bg-bgInput p-4 text-sm text-textPrimary focus:outline-none"
                 >
-                  <option value="unselected">{t.selectRoleOrganization}</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
+                  <option value="Company">Company</option>
+                  <option value="School">School</option>
+                  <option value="University">University</option>
+                  <option value="Training Course">Training Course</option>
                 </select>
+                {errors.rolePerson && (
+                  <Text color="error" className="mt-1 text-sm">
+                    {errors.rolePerson}
+                  </Text>
+                )}
               </div>
-              <Input
-                theme="gray"
-                border="none"
-                type="email"
-                label={t.email}
-                placeholder={t.emailPlaceholder}
-              />
-              <Input
-                label={t.password}
-                theme="gray"
-                border="none"
-                placeholder={t.passwordPlaceholder}
-                type="password"
-              />
-              <Input
-                label={t.phone}
-                theme="gray"
-                border="none"
-                placeholder={t.phonePlaceholder}
-                type="number"
-              />
-              <div className="flex flex-col">
-                <label className="font-semibold">{t.gender}</label>
-                <select
-                  name="gender"
-                  id="gender"
-                  className="mt-1 block w-full rounded-lg border-2 border-bgInput bg-bgInput p-4 text-sm text-textPrimary focus:outline-none"
-                >
-                  <option value="unselected">{t.selectGender}</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                </select>
-              </div>
-              <Input
-                label={t.nationality}
-                theme="gray"
-                border="none"
-                placeholder={t.nationalityPlaceholder}
-              />
               <div>
                 <Input
-                  label={t.academicAccreditation}
-                  id="academic-accreditation"
-                  name="academic-accreditation"
+                  name="email"
+                  value={form.email}
+                  onChange={handleInputChange}
+                  className="bg-bgInput"
+                  border="none"
+                  type="email"
+                  label={t.email}
+                  placeholder={t.emailPlaceholder}
+                />
+                {errors.email && (
+                  <Text color="error" className="mt-1 text-sm">
+                    {errors.email}
+                  </Text>
+                )}
+              </div>
+              <div>
+                <Input
+                  name="password"
+                  value={form.password}
+                  onChange={handleInputChange}
+                  label={t.password}
+                  className="bg-bgInput"
+                  border="none"
+                  placeholder={t.passwordPlaceholder}
+                  type="password"
+                />
+                {errors.password && (
+                  <Text color="error" className="mt-1 text-sm">
+                    {errors.password}
+                  </Text>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <div className="w-1/3">
+                  <label className="font-semibold">{t.countryCode}</label>
+                  <select
+                    name="countryCode"
+                    value={form.countryCode}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full rounded-lg border-2 border-bgInput bg-bgInput p-3 text-sm text-textPrimary focus:outline-none"
+                  >
+                    {Object.entries(countryCodes).map(([country, dial]) => (
+                      <option key={country} value={`+${dial}`}>
+                        {country} (+{dial})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="w-2/3">
+                  <Input
+                    name="phone"
+                    value={form.phone}
+                    onChange={handleInputChange}
+                    label={t.phone}
+                    className="bg-bgInput"
+                    border="none"
+                    placeholder={t.phonePlaceholder}
+                  />
+                  {errors.phone && (
+                    <Text color="error" className="mt-1 text-sm">
+                      {errors.phone}
+                    </Text>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col">
+                <label className="font-semibold" htmlFor="gender">
+                  {t.gender}
+                </label>
+                <select
+                  value={form.gender}
+                  name="gender"
+                  id="gender"
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-lg border-2 border-bgInput bg-bgInput p-4 text-sm text-textPrimary focus:outline-none"
+                >
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+                {errors.gender && (
+                  <Text color="error" className="mt-1 text-sm">
+                    {errors.gender}
+                  </Text>
+                )}
+              </div>
+              <div>
+                <Input
+                  name="nationality"
+                  value={form.nationality}
+                  onChange={handleInputChange}
+                  label={t.nationality}
+                  className="bg-bgInput"
+                  border="none"
+                  placeholder={t.nationalityPlaceholder}
+                />
+                {errors.nationality && (
+                  <Text color="error" className="mt-1 text-sm">
+                    {errors.nationality}
+                  </Text>
+                )}
+              </div>
+              <div>
+                <Input
+                  onChange={handleFileChange}
+                  label={t.idPicture}
+                  id="product-image"
+                  name="product-image"
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={handleFileChange}
                 />
                 <div
                   onClick={() =>
-                    document.getElementById("academic-accreditation")?.click()
+                    document.getElementById("product-image")?.click()
                   }
                   className="flex h-32 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-borderPrimary text-textSecondary"
                 >
@@ -169,45 +378,23 @@ function Signup() {
                     )}
                   </div>
                 </div>
+                {errors.identityImage && (
+                  <Text color="error" className="mt-1 text-sm">
+                    {errors.identityImage}
+                  </Text>
+                )}
               </div>
-              <div>
-                <Input
-                  label={t.establishmentDecision}
-                  id="Establishment decision"
-                  name="Establishment decision"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleFileChange2}
-                />
-                <div
-                  onClick={() =>
-                    document.getElementById("Establishment decision")?.click()
-                  }
-                  className="flex h-32 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-borderPrimary text-textSecondary"
-                >
-                  <div className="flex flex-col items-center">
-                    <TbPhotoPlus size={50} />
-                    {fileName2 ? (
-                      <p className="mt-2 text-textPrimary">{fileName2}</p>
-                    ) : (
-                      <p className="mt-2 text-textSecondary">
-                        {t.browseOrDrop}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
+
               <div className="flex items-center space-x-3">
                 <label className="flex cursor-pointer items-center">
-                  <input
+                  <Input
+                    onChange={handleCheckboxChange}
                     type="checkbox"
                     className="hidden"
                     checked={isChecked}
-                    onChange={handleCheckboxChange}
                   />
                   <div
-                    className={`h-6 w-6 rounded border-2 ${
+                    className={`min-h-6 min-w-6 ml-2 rounded border-2 ${
                       isChecked
                         ? "border-primary bg-primary"
                         : "border-gray-400"
@@ -228,11 +415,18 @@ function Signup() {
                       </svg>
                     )}
                   </div>
-                  <span className="ml-2 text-gray-700">{t.agreeTerms}</span>
+                  <Text color={"gray"} className="ml-2 min-w-[300px]">
+                    {t.agreeTerms}
+                  </Text>
                 </label>
               </div>
-              <Button className="mb-10" color="primary">
-                {t.signUp}
+              <Button
+                disabled={isPending}
+                onClick={handleSubmit}
+                className="mb-10"
+                color="primary"
+              >
+                {isPending ? "Loading..." : t.signUp}
               </Button>
             </div>
           </div>
@@ -242,7 +436,7 @@ function Signup() {
         <div className="hidden bg-primary2 md:block md:w-1/2 xl:w-2/5">
           <img
             src="/images/signupPerson.png"
-            alt="Signup Illustration"
+            alt="Right Side"
             className="h-full w-full object-cover"
           />
         </div>

@@ -9,18 +9,30 @@ import Spinner from "~/_components/Spinner";
 import { Text } from "~/_components/Text";
 import { useInitializeLanguage, useLanguageStore } from "~/APIs/store";
 import translations from "./translations";
+import { useForgetPassword } from "~/APIs/hooks/useAuth";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 function ForgetPassword() {
-  const [isChecked, setIsChecked] = useState(false);
-  const language = useLanguageStore((state) => state.language); // Get current language
-  const t = translations[language] || translations.en; // Fetch translations for the current language
+  const router = useRouter();
+  const language = useLanguageStore((state) => state.language);
+  const t = translations[language] || translations.en;
+  useInitializeLanguage();
+  const isLoading = useLanguageStore((state) => state.isLoading);
 
-  const handleCheckboxChange = () => {
-    setIsChecked(!isChecked);
-  };
-
-  useInitializeLanguage(); // Ensure language state is initialized
-  const isLoading = useLanguageStore((state) => state.isLoading); // Check if language is loading
+  const [email, setEmail] = useState("");
+  const { mutate, status } = useForgetPassword({
+    onSuccess: () => {
+      router.push(`/verify-account?email=${encodeURIComponent(email)}&redirect=reset-password`);
+      toast.success("Check your email for further instructions.");
+    },
+    onError: () => {
+      toast.error("An error occurred. Please try again.");
+    },
+  });
+  
+  const isSubmitting = status === "pending";
+  
 
   if (isLoading) {
     return (
@@ -50,16 +62,23 @@ function ForgetPassword() {
               {t.title}
             </Text>
             <Text className="text-textSecondary">{t.description}</Text>
-            <div className="space-y-16 py-8">
+            <div className="space-y-8 py-8">
               <Input
-                theme="gray"
+                className="bg-bgInput"
                 border="none"
                 type="email"
                 label={t.emailLabel}
                 placeholder={t.emailPlaceholder}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
-              <Button className="mb-10 py-6" color="primary">
-                {t.nextButton}
+              <Button
+                className="mb-10 py-6"
+                color="primary"
+                onClick={() => mutate({ userName: email })}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Loading..." : t.nextButton}
               </Button>
               <div className="flex justify-center gap-2">
                 <Text>{t.rememberPassword}</Text>

@@ -135,16 +135,18 @@ const SelectDate = () => {
                       onClick={() => toggleSection("company")}
                     >
                       <div className="flex items-center gap-2">
-                        {openSections.academia ? (
-                          <IoIosArrowDown
-                            size={14}
-                            className="ml-auto text-textSecondary"
-                          />
-                        ) : (
-                          <IoIosArrowForward
-                            size={14}
-                            className="ml-auto text-textSecondary"
-                          />
+                        {openSections.academia && (
+                          <div className="text-start text-textSecondary">
+                            <div className="mt-2 w-full cursor-pointer rounded-lg bg-bgPrimary px-4 py-1 pl-8 hover:text-textPrimary">
+                              {t.university}
+                            </div>
+                            <div className="mt-2 cursor-pointer rounded-lg px-4 py-1 pl-8 transition duration-300 hover:bg-bgPrimary hover:text-textPrimary">
+                              {t.school}
+                            </div>
+                            <div className="mt-2 cursor-pointer rounded-lg px-4 py-1 pl-8 transition duration-300 hover:bg-bgPrimary hover:text-textPrimary">
+                              {t.trainingCourse}
+                            </div>
+                          </div>
                         )}
                         <img src="/images/company.png" alt="academia" />
                         {t.company}
@@ -191,7 +193,7 @@ const SelectDate = () => {
             <Box
               rounded="none"
               padding="0"
-              className="px-0 pb-[120px] pt-6 md:mb-8 md:px-4 md:pb-[20px]"
+              className="px-0 pb-[120px] md:mb-8 md:px-4 md:pb-[20px]"
             >
               <div
                 className={`mx-auto flex min-h-[700px] w-full flex-col rounded-lg border-borderPrimary/25 lg:border lg:shadow-md xl:flex-row 2xl:w-4/5`}
@@ -270,7 +272,9 @@ const SelectDate = () => {
                       />
                     </div>
                     {selectedDay && (
-                      <div className="mt-4 flex-1 px-8">
+                      <div
+                        className="mt-4 flex-1 px-8"
+                      >
                         <h2 className="text-xl font-bold text-textPrimary">
                           {selectedDay.toDateString()}
                         </h2>

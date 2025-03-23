@@ -8,7 +8,6 @@ import { Clock } from "lucide-react";
 import CourseCard from "~/_components/CourseCard";
 import Box from "~/_components/Box";
 import { Calendar } from "~/components/ui/Calendar";
-import { useRouter } from "next/navigation";
 import translations from "./translations";
 import Image from "next/image";
 import { FaArrowLeft, FaArrowRight, FaUserGear } from "react-icons/fa6";
@@ -375,7 +374,7 @@ const Education = () => {
                         href="#"
                         className="mt-4 inline-flex items-center font-bold text-primary hover:underline"
                       >
-                       {t.learnMore}
+                        {t.learnMore}
                         {language == "ar" ? (
                           <FaArrowLeft size={22} className="mx-1" />
                         ) : (
