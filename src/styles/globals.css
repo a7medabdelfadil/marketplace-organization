@@ -196,3 +196,24 @@ html {
     }
   }
 }
+
+div#largeVideoContainer > div:first-child {
+  display: none !important;
+}
+
+.watermark {
+  display: none !important;
+}
+
+.leftwatermark {
+  left: 32px;
+  top: 32px;
+  background-position: center left;
+  /* background-image: url(your-image-url); */
+ }
+#leftwatermark {
+  left: 32px;
+  top: 32px;
+  background-position: center left;
+  /* background-image: url(your-image-url); */
+ }
